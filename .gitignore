@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Environment files
+.env
+
+# macOS
+.DS_Store
+
+# Airflow
+airflow/logs/*
+!airflow/logs/.gitkeep
+
+# dbt
+dbt/dbt_packages/
+dbt/target/
+dbt/logs/
+
+# Superset
+superset/.superset/
+
+# IDE
+.vscode/
+
+# Data files
+data/generated/*
+!data/generated/.gitkeep
+
+# Misc
+*.log
