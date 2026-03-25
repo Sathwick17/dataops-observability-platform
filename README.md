@@ -1,4 +1,5 @@
 # dataops-observability-platform
+
 End-to-end DataOps platform for monitoring pipeline failures, schema changes, SLA breaches, and downstream impact using Kafka, Airflow, PostgreSQL, dbt, Superset, and RAG.
 
 # DataOps Change Impact & Pipeline Failure Observability Platform
