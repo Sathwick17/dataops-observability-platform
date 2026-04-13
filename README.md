@@ -1,66 +1,141 @@
-# dataops-observability-platform
-End-to-end DataOps platform for monitoring pipeline failures, schema changes, SLA breaches, and downstream impact using Kafka, Airflow, PostgreSQL, dbt, Superset, and RAG.
-
 # DataOps Change Impact & Pipeline Failure Observability Platform
 
-An end-to-end DataOps project that simulates pipeline execution events, schema changes, data quality issues, and operational incidents to monitor downstream impact, SLA breaches, and pipeline reliability.
+End-to-end DataOps platform for monitoring pipeline failures, schema changes, SLA breaches, and downstream impact using Kafka, Airflow, PostgreSQL, dbt, Grafana, and RAG.
 
-This project is being built as a local, fully containerized data platform using Docker, with a focus on modern data engineering workflows across batch ETL, event-driven ingestion, orchestration, transformation, dashboarding, and retrieval-augmented troubleshooting.
+## Problem Statement
 
-## Goal
+Modern data teams often lack centralized visibility into whether their pipelines are running on time, producing quality data, and delivering reliable outputs to downstream consumers. When failures happen, root cause investigation is slow and manual. This platform addresses that gap.
 
-Modern data teams often struggle to answer questions like:
+## What This Platform Does
 
-- What changed before this pipeline started failing?
-- Which downstream assets were impacted by a schema change?
-- Which pipelines are repeatedly breaching SLAs?
-- Are data quality issues isolated or recurring across assets?
-- How can engineers and analysts investigate failures faster?
-
-This project aims to build a centralized observability platform to answer those questions using a combination of streaming events, warehouse modeling, orchestration, BI dashboards, and an optional RAG-based troubleshooting layer.
-
-## Project Scope
-
-The platform will:
-
-- Simulate pipeline and task lifecycle events
-- Capture schema change and data quality events
-- Store raw operational data in PostgreSQL
-- Use dbt to create clean, analytics-ready models
-- Track pipeline health, SLA breaches, and downstream impact
-- Surface operational insights through dashboards
-- Add a RAG-based assistant for grounded failure investigation
+- Tracks every pipeline run — status, duration, records processed
+- Detects failures, retries, and SLA breaches in real time
+- Traces downstream impact when a schema change or failure occurs
+- Monitors data quality across assets
+- Provides AI-assisted root cause investigation via a RAG-based API
 
 ## Tech Stack
 
-- **Python** — event generation, ETL scripts, ingestion, helper services
-- **Docker Compose** — local orchestration of all services
-- **PostgreSQL** — raw and transformed operational data storage
-- **Apache Kafka** — streaming pipeline, schema, and incident events
-- **Apache Airflow** — workflow orchestration, scheduling, and monitoring
-- **dbt Core** — SQL transformations, testing, and modeling
-- **Apache Superset** — dashboarding and operational analytics
-- **RAG layer** — retrieval-based troubleshooting over logs, metadata, and runbooks
-- **GitHub** — version control, documentation, and portfolio visibility
+| Tool | Purpose |
+|---|---|
+| Python | Data generation, ETL scripts, Kafka producer/consumer |
+| PostgreSQL | Raw and transformed data storage |
+| Apache Kafka | Real-time event streaming |
+| Apache Airflow | Workflow orchestration and scheduling |
+| dbt Core | SQL transformations and data modeling |
+| Grafana | Operational dashboards and observability |
+| Ollama + LLaMA | Local RAG model for incident investigation |
+| FastAPI | API interface for RAG-based troubleshooting |
+| Docker Compose | Full local containerized environment |
 
-## Planned Architecture
+## Architecture
 
-Python Event Generators / ETL
-            |
-            v
-         Kafka Topics  --->  Python Consumer / Ingestion
-            |                          |
-            v                          v
-        Airflow Orchestration ---> PostgreSQL Raw Layer
-                                      |
-                                      v
-                                   dbt Core
-                                      |
-                                      v
-                              Analytics / Mart Layer
-                                      |
-                                      v
-                                Apache Superset
-                                      |
-                                      v
-                         RAG Troubleshooting Assistant
+```text
+Python Event Generators / ETL Scripts
+              |
+              v
+         Kafka Topics  ────►  Python Consumer / Ingestion
+              |                          |
+              v                          v
+      Airflow Orchestration ────►  PostgreSQL Raw Layer
+                                        |
+                                        v
+                                    dbt Core
+                                        |
+                                        v
+                               Analytics Mart Layer
+                                        |
+                              ┌─────────┴──────────┐
+                              v                    v
+                           Grafana            FastAPI + RAG
+                        Dashboards         (Ollama + LLaMA)
+```
+
+## Project Phases
+
+| Phase | Description | Status |
+|---|---|---|
+| 0 | Project Setup | ✅ Done |
+| 1 | Base Data Layer | ✅ Done |
+| 2 | Historical Data Generation & Batch ETL | 🔄 In Progress |
+| 3 | SQL Modeling and dbt Layer | ⬜ Pending |
+| 4 | Grafana Dashboard Layer | ⬜ Pending |
+| 5 | Kafka Streaming Layer | ⬜ Pending |
+| 6 | Airflow Orchestration | ⬜ Pending |
+| 7 | Change Impact Logic | ⬜ Pending |
+| 8 | RAG Layer (Ollama + FastAPI) | ⬜ Pending |
+| 9 | Final Polish | ⬜ Pending |
+
+## Database Schema
+
+The platform models operational pipeline telemetry across these core tables:
+
+- `teams` — ownership of pipelines
+- `pipelines` — pipeline definitions and metadata
+- `tasks` — individual steps within each pipeline
+- `data_assets` — output datasets produced by pipelines
+- `slas` — SLA definitions per pipeline
+- `schema_change_events` — tracks schema drift across assets
+- `raw_pipeline_events` — core event log (failures, retries, completions)
+
+## Repository Structure
+
+```text
+dataops-observability-platform/
+├── docker-compose.yml
+├── .env.example
+├── README.md
+├── app/
+│   ├── generator/         # Synthetic data generation scripts
+│   ├── ingestion/         # ETL loader scripts
+│   ├── rag/               # RAG layer and FastAPI
+│   └── utils/             # Shared utilities
+├── sql/
+│   ├── init/              # Postgres init scripts
+│   └── queries/           # Ad hoc queries
+├── dbt/                   # dbt project
+├── airflow/
+│   ├── dags/              # Airflow DAGs
+│   ├── logs/
+│   └── plugins/
+├── kafka/                 # Kafka configs and helpers
+├── data/
+│   ├── seeds/             # Reference/seed data
+│   ├── raw/               # Raw input files
+│   └── generated/         # Synthetic generated data
+└── docs/                  # Architecture diagrams and notes
+```
+
+## Key Use Cases
+
+- Monitor pipeline success rates, retry patterns, and runtime trends
+- Track SLA breaches by pipeline and team
+- Detect schema changes and trace downstream asset impact
+- Investigate root causes using AI-assisted troubleshooting
+- Surface data quality issues before they reach consumers
+
+## Resume Value
+
+This project demonstrates end-to-end skills across:
+
+- **Data Engineering** — Kafka, Airflow, ETL/ELT, Docker, pipeline design
+- **Analytics Engineering** — dbt modeling, SQL marts, data quality
+- **Data Analyst** — Grafana dashboards, KPI monitoring, trend analysis
+- **AI/ML Engineering** — RAG implementation, local LLM integration, FastAPI
+
+## Setup
+
+```bash
+git clone https://github.com/Sathwick17/dataops-observability-platform.git
+cd dataops-observability-platform
+cp .env.example .env
+docker compose up -d
+```
+
+## Status
+
+Currently in active development. Building incrementally with clean commits.
+
+## Author
+
+Sathwick Kiran
