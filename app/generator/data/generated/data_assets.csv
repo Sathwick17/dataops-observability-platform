@@ -1,7 +1,0 @@
-asset_id,asset_name,pipeline_id,asset_type,created_at
-1,daily_sales_table,1,table,2026-03-25 20:42:17
-2,user_activity_table,2,table,2026-03-25 20:42:17
-3,inventory_table,3,table,2026-03-25 20:42:17
-4,payments_table,4,table,2026-03-25 20:42:17
-5,marketing_table,5,table,2026-03-25 20:42:17
-6,fraud_detection_table,6,table,2026-03-25 20:42:17

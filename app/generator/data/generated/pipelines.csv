@@ -1,7 +1,0 @@
-pipeline_id,pipeline_name,team_id,schedule_type,criticality,created_at
-1,daily_sales_pipeline,3,hourly,medium,2026-03-24 20:57:28
-2,user_activity_pipeline,1,hourly,medium,2026-03-24 20:57:28
-3,inventory_pipeline,2,hourly,high,2026-03-24 20:57:28
-4,payments_pipeline,2,daily,high,2026-03-24 20:57:28
-5,marketing_pipeline,1,hourly,high,2026-03-24 20:57:28
-6,fraud_detection_pipeline,3,daily,medium,2026-03-24 20:57:28
