@@ -98,7 +98,7 @@ The platform models operational pipeline telemetry across these core tables:
 |-------|-------------|--------|
 | 0 | Project Setup | ✅ Done |
 | 1 | Base Data Layer | ✅ Done |
-| 2 | Historical Data Generation & Batch ETL | 🔄 In Progress |
+| 2 | Historical Data Generation & Batch ETL | ✅ Done |
 | 3 | SQL Modeling and dbt Layer | ✅ Done |
 | 4 | Grafana Dashboard Layer | ✅ Done |
 | 5 | Kafka Streaming Layer | 🔄 In Progress |
