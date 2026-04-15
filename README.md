@@ -99,9 +99,9 @@ The platform models operational pipeline telemetry across these core tables:
 | 0 | Project Setup | ✅ Done |
 | 1 | Base Data Layer | ✅ Done |
 | 2 | Historical Data Generation & Batch ETL | 🔄 In Progress |
-| 3 | SQL Modeling and dbt Layer | ⬜ Pending |
-| 4 | Grafana Dashboard Layer | ⬜ Pending |
-| 5 | Kafka Streaming Layer | ⬜ Pending |
+| 3 | SQL Modeling and dbt Layer | ✅ Done |
+| 4 | Grafana Dashboard Layer | ✅ Done |
+| 5 | Kafka Streaming Layer | 🔄 In Progress |
 | 6 | Airflow Orchestration | ⬜ Pending |
 | 7 | Change Impact Logic | ⬜ Pending |
 | 8 | RAG Layer (Ollama + FastAPI) | ⬜ Pending |
