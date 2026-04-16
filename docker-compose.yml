@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
@@ -12,6 +10,29 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./sql/init:/docker-entrypoint-initdb.d
+    networks:
+      - dataops_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: dataops_grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - postgres
+    networks:
+      - dataops_network
 
 volumes:
   postgres_data:
+  grafana_data:
+
+networks:
+  dataops_network:
+    driver: bridge
