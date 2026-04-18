@@ -4,12 +4,8 @@ from airflow.operators.bash import BashOperator
 from datetime import datetime, timedelta
 import psycopg2
 import os
+import subprocess
 
-# ---------------------------------------------------------------------------
-# Default arguments — applied to every task in the DAG
-# retries=1 means if a task fails, Airflow retries it once automatically
-# retry_delay=5 minutes between retries
-# ---------------------------------------------------------------------------
 default_args = {
     "owner": "dataops",
     "depends_on_past": False,
@@ -18,15 +14,10 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 
-# ---------------------------------------------------------------------------
-# DAG definition
-# schedule_interval="@hourly" means this DAG runs every hour automatically
-# catchup=False means don't backfill missed runs
-# ---------------------------------------------------------------------------
 with DAG(
     dag_id="dataops_observability",
     default_args=default_args,
-    description="Refreshes dbt models and checks SLA breaches hourly",
+    description="Refreshes dbt models, checks SLA breaches, and runs change impact analysis hourly",
     schedule_interval="@hourly",
     start_date=datetime(2026, 1, 1),
     catchup=False,
@@ -35,9 +26,6 @@ with DAG(
 
     # -----------------------------------------------------------------------
     # Task 1: Run dbt models
-    # BashOperator runs a shell command
-    # This refreshes all 3 mart tables: fct_pipeline_failures,
-    # fct_sla_breaches, fct_schema_change_impact
     # -----------------------------------------------------------------------
     run_dbt_models = BashOperator(
         task_id="run_dbt_models",
@@ -46,8 +34,6 @@ with DAG(
 
     # -----------------------------------------------------------------------
     # Task 2: Check SLA breaches
-    # PythonOperator runs a Python function
-    # Counts breaches in the last hour and logs to Postgres
     # -----------------------------------------------------------------------
     def check_sla_breaches():
         conn = psycopg2.connect(
@@ -76,8 +62,44 @@ with DAG(
     )
 
     # -----------------------------------------------------------------------
-    # Task 3: Log pipeline summary
-    # Counts today's failures and prints a summary
+    # Task 3: Run change impact analysis  ← NEW
+    #
+    # Calls the analyzer script we built in Phase 7.
+    # subprocess.run() executes it as a child process, exactly like
+    # running it manually in the terminal.
+    #
+    # Why subprocess instead of importing the function directly?
+    # Airflow workers run in their own environment inside Docker.
+    # Using subprocess keeps the DAG clean — it just orchestrates,
+    # the actual logic lives in app/impact/.
+    #
+    # If the script crashes (returncode != 0), we raise an Exception
+    # so Airflow marks the task as FAILED and triggers the retry.
+    # -----------------------------------------------------------------------
+    def run_change_impact_analysis():
+        result = subprocess.run(
+            ["python", "/opt/airflow/app/impact/change_impact_analyzer.py"],
+            capture_output=True,
+            text=True,
+            env={
+                **os.environ,
+                "POSTGRES_HOST": "dataops_postgres",
+                "POSTGRES_DB":   "dataops",
+                "POSTGRES_USER": "postgres",
+                "POSTGRES_PASSWORD": "postgres",
+            }
+        )
+        print(result.stdout)
+        if result.returncode != 0:
+            raise Exception(f"Change impact analysis failed:\n{result.stderr}")
+
+    analyze_impact = PythonOperator(
+        task_id="analyze_change_impact",
+        python_callable=run_change_impact_analysis,
+    )
+
+    # -----------------------------------------------------------------------
+    # Task 4: Log pipeline summary
     # -----------------------------------------------------------------------
     def log_pipeline_summary():
         conn = psycopg2.connect(
@@ -107,7 +129,8 @@ with DAG(
     )
 
     # -----------------------------------------------------------------------
-    # Task dependencies — defines the order tasks run
-    # run_dbt_models first, then check_sla, then log_summary
+    # Task dependencies
+    # BEFORE: run_dbt_models >> check_sla >> log_summary
+    # AFTER:  run_dbt_models >> check_sla >> analyze_impact >> log_summary
     # -----------------------------------------------------------------------
-    run_dbt_models >> check_sla >> log_summary
+    run_dbt_models >> check_sla >> analyze_impact >> log_summary
