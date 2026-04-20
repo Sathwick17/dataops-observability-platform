@@ -1,0 +1,19 @@
+task_id,pipeline_id,task_name,task_type,task_order,created_at
+1,1,extract_data,extract,1,2026-04-12 22:07:05
+2,1,transform_data,transform,2,2026-04-12 22:07:05
+3,1,load_data,load,3,2026-04-12 22:07:05
+4,2,extract_data,extract,1,2026-04-12 22:07:05
+5,2,transform_data,transform,2,2026-04-12 22:07:05
+6,2,load_data,load,3,2026-04-12 22:07:05
+7,3,extract_data,extract,1,2026-04-12 22:07:05
+8,3,transform_data,transform,2,2026-04-12 22:07:05
+9,3,load_data,load,3,2026-04-12 22:07:05
+10,4,extract_data,extract,1,2026-04-12 22:07:05
+11,4,transform_data,transform,2,2026-04-12 22:07:05
+12,4,load_data,load,3,2026-04-12 22:07:05
+13,5,extract_data,extract,1,2026-04-12 22:07:05
+14,5,transform_data,transform,2,2026-04-12 22:07:05
+15,5,load_data,load,3,2026-04-12 22:07:05
+16,6,extract_data,extract,1,2026-04-12 22:07:05
+17,6,transform_data,transform,2,2026-04-12 22:07:05
+18,6,load_data,load,3,2026-04-12 22:07:05
