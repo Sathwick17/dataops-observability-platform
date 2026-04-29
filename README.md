@@ -12,6 +12,8 @@
 ![dbt](https://img.shields.io/badge/dbt-FF694B?style=for-the-badge&logo=dbt&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-0ea5e9?style=for-the-badge&logo=docker&logoColor=white)
+![Gemini](https://img.shields.io/badge/Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 
 </div>
 
@@ -21,7 +23,7 @@
 
 Modern data teams often lack centralized visibility into whether their pipelines are running on time, producing quality data, and delivering reliable outputs to downstream consumers. When failures occur, root cause investigation is slow and manual.
 
-This platform addresses that gap — providing end-to-end observability across pipeline health, schema changes, SLA breaches, and downstream impact, with an AI-assisted RAG layer for incident investigation.
+This platform addresses that gap — providing end-to-end observability across pipeline health, schema changes, SLA breaches, and downstream impact, with an AI-assisted RAG layer powered by **Google Gemini** for intelligent incident investigation.
 
 ---
 
@@ -31,7 +33,7 @@ This platform addresses that gap — providing end-to-end observability across p
 - Detects failures, retries, and SLA breaches in real time
 - Traces downstream impact when a schema change or failure occurs
 - Monitors data quality across assets
-- Provides AI-assisted root cause investigation via a RAG-based API
+- Provides AI-assisted root cause investigation via a RAG-based API backed by Google Gemini
 
 ---
 
@@ -55,7 +57,7 @@ Python Event Generators / ETL Scripts
                               ┌─────────┴──────────┐
                               ▼                    ▼
                            Grafana            FastAPI + RAG
-                        Dashboards         (Ollama + LLaMA)
+                        Dashboards        (Google Gemini API)
 ```
 
 ---
@@ -70,7 +72,7 @@ Python Event Generators / ETL Scripts
 | Apache Airflow | Workflow orchestration and scheduling |
 | dbt Core | SQL transformations and data modeling |
 | Grafana | Operational dashboards and observability |
-| Ollama + LLaMA | Local RAG model for incident investigation |
+| Google Gemini | Cloud-based LLM powering the RAG incident investigation layer |
 | FastAPI | API interface for RAG-based troubleshooting |
 | Docker Compose | Full local containerized environment |
 
@@ -101,11 +103,11 @@ The platform models operational pipeline telemetry across these core tables:
 | 2 | Historical Data Generation & Batch ETL | ✅ Done |
 | 3 | SQL Modeling and dbt Layer | ✅ Done |
 | 4 | Grafana Dashboard Layer | ✅ Done |
-| 5 | Kafka Streaming Layer | 🔄 In Progress |
-| 6 | Airflow Orchestration | ⬜ Pending |
-| 7 | Change Impact Logic | ⬜ Pending |
-| 8 | RAG Layer (Ollama + FastAPI) | ⬜ Pending |
-| 9 | Final Polish | ⬜ Pending |
+| 5 | Kafka Streaming Layer | ✅ Done |
+| 6 | Airflow Orchestration | ✅ Done |
+| 7 | Change Impact Logic | ✅ Done |
+| 8 | RAG Layer (Gemini + FastAPI) | ✅ Done |
+| 9 | Final Polish | ✅ Done |
 
 ---
 
@@ -142,10 +144,21 @@ dataops-observability-platform/
 git clone https://github.com/Sathwick17/dataops-observability-platform.git
 cd dataops-observability-platform
 cp .env.example .env
+# Add your Google Gemini API key to .env
 docker compose up -d
 ```
 
-> **Status:** Currently in active development. Building incrementally with clean commits.
+> **Note:** The RAG layer requires a valid `GEMINI_API_KEY` in your `.env` file. You can obtain one from [Google AI Studio](https://aistudio.google.com/).
+
+---
+
+## Key Highlights
+
+- **Zero blind spots** — every pipeline run, task, and data asset is tracked with full lineage
+- **Real-time streaming** — Kafka ingests live pipeline events with millisecond latency
+- **AI-powered RCA** — ask natural language questions about failures; Gemini reasons over your operational telemetry to surface root causes
+- **Schema drift detection** — automatic alerts when upstream schemas change, with downstream impact tracing
+- **Production-grade orchestration** — Airflow DAGs manage scheduling, retries, and dependency resolution
 
 ---
 
