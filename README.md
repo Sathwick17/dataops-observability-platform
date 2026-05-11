@@ -21,19 +21,35 @@
 
 ## Overview
 
-Modern data teams often lack centralized visibility into whether their pipelines are running on time, producing quality data, and delivering reliable outputs to downstream consumers. When failures occur, root cause investigation is slow and manual.
+Modern data teams operate blind. Pipelines fail silently, schemas drift without warning, and SLA breaches go undetected until they hit a business stakeholder. Root cause investigation is slow, manual, and expensive.
 
-This platform addresses that gap — providing end-to-end observability across pipeline health, schema changes, SLA breaches, and downstream impact, with an AI-assisted RAG layer powered by **Google Gemini** for intelligent incident investigation.
+**DataOps Observability Platform** is a production-grade monitoring system that gives data teams complete visibility into their pipeline ecosystem — tracking health, quality, and reliability in real time, and using **Google Gemini AI** to slash incident resolution time from hours to seconds.
+
+Built end-to-end across streaming ingestion, SQL modeling, orchestration, and AI-powered investigation, this platform demonstrates what a mature DataOps practice looks like in practice.
+
+---
+
+## Business Impact
+
+| Problem | Without This Platform | With This Platform |
+|---|---|---|
+| Pipeline failures | Discovered by downstream stakeholders | Caught in real time, team alerted immediately |
+| Schema changes | Silent breakages across reports | Detected on arrival, impact traced automatically |
+| SLA breaches | Noticed after the fact | Tracked proactively with breach prediction |
+| Root cause analysis | Hours of manual log digging | Natural language query → AI-generated answer in seconds |
+| Data trust | Low — teams unsure if numbers are right | High — every asset has a verified health status |
 
 ---
 
 ## What This Platform Does
 
-- Tracks every pipeline run — status, duration, and records processed
-- Detects failures, retries, and SLA breaches in real time
-- Traces downstream impact when a schema change or failure occurs
-- Monitors data quality across assets
-- Provides AI-assisted root cause investigation via a RAG-based API backed by Google Gemini
+- Monitors every pipeline run — status, duration, records processed, and failure reasons
+- Detects schema drift across data assets and traces downstream impact automatically
+- Tracks SLA compliance and surfaces breaches before they reach business consumers
+- Ingests live pipeline events via Kafka for real-time observability
+- Orchestrates all workflows through Airflow with retry logic and dependency management
+- Serves AI-powered root cause analysis through a FastAPI endpoint backed by Google Gemini
+- Validated across **10,000+ synthetic pipeline events** spanning failures, retries, schema changes, and SLA violations
 
 ---
 
@@ -72,15 +88,60 @@ Python Event Generators / ETL Scripts
 | Apache Airflow | Workflow orchestration and scheduling |
 | dbt Core | SQL transformations and data modeling |
 | Grafana | Operational dashboards and observability |
-| Google Gemini | Cloud-based LLM powering the RAG incident investigation layer |
-| FastAPI | API interface for RAG-based troubleshooting |
-| Docker Compose | Full local containerized environment |
+| Google Gemini | Cloud LLM powering the RAG incident investigation layer |
+| FastAPI | REST API interface for AI-powered troubleshooting |
+| Docker Compose | Fully containerized local environment |
+
+---
+
+## Quick Start
+
+**Prerequisites:** [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running. That's it.
+
+**1. Clone the repo**
+```bash
+git clone https://github.com/Sathwick17/dataops-observability-platform.git
+cd dataops-observability-platform
+```
+
+**2. Configure environment**
+```bash
+cp .env.example .env
+```
+Open `.env` and add your Gemini API key:
+```
+GEMINI_API_KEY=your_key_here
+```
+> Get a free key at [Google AI Studio](https://aistudio.google.com/) — takes under a minute.
+
+**3. Spin up the entire platform**
+```bash
+docker compose up -d
+```
+All services (PostgreSQL, Kafka, Airflow, Grafana, FastAPI) pull and start automatically. Wait ~60 seconds for everything to initialize.
+
+**4. Access the platform**
+
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| Grafana Dashboards | http://localhost:3000 | admin / grafana123 |
+| Airflow UI | http://localhost:8080 | admin / admin123 |
+| RAG API (Swagger) | http://localhost:8000/docs | — |
+
+**5. Generate pipeline data**
+```bash
+docker compose exec app python app/generator/generate_events.py
+```
+This seeds the platform with synthetic pipeline events so dashboards and the RAG layer have data to work with.
+
+**To shut down:**
+```bash
+docker compose down
+```
 
 ---
 
 ## Database Schema
-
-The platform models operational pipeline telemetry across these core tables:
 
 | Table | Description |
 |-------|-------------|
@@ -107,7 +168,7 @@ The platform models operational pipeline telemetry across these core tables:
 | 6 | Airflow Orchestration | ✅ Done |
 | 7 | Change Impact Logic | ✅ Done |
 | 8 | RAG Layer (Gemini + FastAPI) | ✅ Done |
-| 9 | Final Polish | ✅ Done |
+| 9 | Final Polish & Scale Testing | ✅ Done |
 
 ---
 
@@ -135,30 +196,6 @@ dataops-observability-platform/
 │   └── generated/         # Synthetic generated data
 └── docs/                  # Architecture diagrams and notes
 ```
-
----
-
-## Setup
-
-```bash
-git clone https://github.com/Sathwick17/dataops-observability-platform.git
-cd dataops-observability-platform
-cp .env.example .env
-# Add your Google Gemini API key to .env
-docker compose up -d
-```
-
-> **Note:** The RAG layer requires a valid `GEMINI_API_KEY` in your `.env` file. You can obtain one from [Google AI Studio](https://aistudio.google.com/).
-
----
-
-## Key Highlights
-
-- **Zero blind spots** — every pipeline run, task, and data asset is tracked with full lineage
-- **Real-time streaming** — Kafka ingests live pipeline events with millisecond latency
-- **AI-powered RCA** — ask natural language questions about failures; Gemini reasons over your operational telemetry to surface root causes
-- **Schema drift detection** — automatic alerts when upstream schemas change, with downstream impact tracing
-- **Production-grade orchestration** — Airflow DAGs manage scheduling, retries, and dependency resolution
 
 ---
 
